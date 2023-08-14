@@ -1,0 +1,82 @@
+import java.io.*;
+import java.util.*;
+
+public class WordCountApp {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        boolean playAgain = true;
+        while (playAgain) {
+            System.out.println("Word Count App");
+            System.out.println("1. Count Words");
+            System.out.println("2. Exit");
+
+            int choice = getIntInput("Enter your choice: ");
+            switch (choice) {
+                case 1:
+                    countWords(scanner);
+                    break;
+                case 2:
+                    playAgain = false;
+                    System.out.println("Goodbye!");
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please choose a valid option.");
+            }
+        }
+
+        scanner.close();
+    }
+
+    private static int getIntInput(String message) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print(message);
+        while (!scanner.hasNextInt()) {
+            System.out.print("Invalid input. " + message);
+            scanner.next();
+        }
+        return scanner.nextInt();
+    }
+
+    private static void countWords(Scanner scanner) {
+        scanner.nextLine(); // Consume newline
+        System.out.print("Enter a text or provide a file path: ");
+        String userInput = scanner.nextLine();
+
+        try {
+            String text = getTextFromFileOrInput(userInput);
+            int totalWords = countWordsInText(text);
+
+            System.out.println("Total word count: " + totalWords);
+
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found.");
+        } catch (IOException e) {
+            System.out.println("An error occurred while reading the file.");
+        }
+    }
+
+    private static String getTextFromFileOrInput(String userInput) throws IOException {
+        if (userInput.endsWith(".txt")) {
+            return getTextFromFile(userInput);
+        } else {
+            return userInput;
+        }
+    }
+
+    private static String getTextFromFile(String filePath) throws IOException {
+        StringBuilder text = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                text.append(line).append(" ");
+            }
+        }
+        return text.toString();
+    }
+
+    private static int countWordsInText(String text) {
+        String[] words = text.split("[\\p{Punct}\\s]+");
+        return words.length;
+    }
+}
